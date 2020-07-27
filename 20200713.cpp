@@ -4,8 +4,44 @@
 #include <vector>
 using namespace std;
 
-int field_width = 20;
-int field_height = 30;
+int field_width = 2;
+int field_height = 3;
+
+
+
+int trainedQMatrix[12][12] 
+{
+    {0, 0, 0, 0, 80, 0, 80, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 80, 0, 80, 0, 0, 0, 0},
+    {0, 0, 0, 0, 80, 0, 80, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 80, 0, 80, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100},
+    {0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+};
+
+int states[12][4]
+{
+    {0,0,2,0},
+    {0,1,2,0},
+    {0,0,2,1},
+    {0,1,2,1},
+
+    {1,0,2,0},
+    {1,1,2,0},
+    {1,0,2,1},
+    {1,1,2,1},
+
+    {2,0,2,0},
+    {2,1,2,0},
+    {2,0,2,1},
+    {2,1,2,1}
+};
 
 class Object {
     public:
@@ -88,31 +124,43 @@ class Creature : public Object {
 
 int main() {
     std::system("clear");
+    
+    srand((unsigned int)time(NULL));
 
     int food_eaten = 0;
 
     Creature creature (5, field_height - 1);
 
     std::vector< Food > foodVector;
-    foodVector.push_back(Food( 3, 0));
+    //foodVector.push_back(Food( 3, 0));
 
     std::vector< Predator > predators;
-    predators.push_back(Predator(5, 2));
+    //predators.push_back(Predator(5, 2));
 
-    for (int y = 0; y < 22; y++) {
-        cout << "_";
-    }
-    cout << endl;
 
     for (int r = 0; r < 1000; r++) {
-        if (rand() % 12 == 0) {
+/*
+        if (rand() % 22 == 0) {
             predators.push_back( Predator (rand() % field_width, 0) );
         }
-        if (rand() % 10 == 0) {
+        if (rand() % 20 == 0) {
             foodVector.push_back( Food (rand() % field_width, 0) );
         }
-
+*/
+/*
+        if (rand() % 22 == 0) {
+            if (rand() % 2 == 0) {
+                foodVector.push_back( Food (rand() % field_width, 0) );
+            } else {
+                //predators.push_back( Predator (rand() % field_width, 0) );
+            }
+        }
+*/
+        if (foodVector.size() == 0) {
+            foodVector.push_back( Food (rand() % field_width, 0) );
+        }
         std::system("clear");
+
         for (int y = 0; y < field_height; y++) {
             cout << "|";
             for (int x = 0; x < field_width; x++) {
@@ -173,10 +221,24 @@ int main() {
         cout << endl << "Food x: "<< foodVector[0].get_x_pos() << ", y: " << foodVector[0].get_y_pos() << endl;
         */
         cout << endl << "Food eaten: "<< food_eaten << endl;
-        cout << rand() % 10 << endl;
-        // Varför blir det samma resultat varje gång???
+        cout << endl << "Food x: "<< foodVector[0].get_x_pos() << ", y: " << foodVector[0].get_y_pos() << endl;
+        cout << endl << "Creature x: "<< creature.get_x_pos() << ", y: " << creature.get_y_pos() << endl;
+
+        for (int a = 0; a < 12; a++) {
+            if (states[a][0] == foodVector[0].get_y_pos() && states[a][1] == foodVector[0].get_x_pos() && states[a][2] == creature.get_x_pos()) {
+                cout << "current state: " << endl;
+            }
+
+        }
+/*
+int states[12][4]
+{
+    {0,0,2,0},
+    {0,1,2,0},
+*/
+
 
         creature.move(predators, foodVector);
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 }
